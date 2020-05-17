@@ -1,0 +1,42 @@
+{
+  "name": "slack-spike",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w src/*.ts src/runners/*.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "webpack": "webpack",
+    "webpack:analyse": "webpack --profile --json > stats.json",
+    "cdk": "cdk",
+    "deploy": "webpack && cdk deploy"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@aws-cdk/aws-apigateway": "1.37.0",
+    "@aws-cdk/aws-dynamodb": "1.37.0",
+    "@aws-cdk/aws-lambda": "1.37.0",
+    "@aws-cdk/core": "1.37.0",
+    "@slack/oauth": "^1.0.0",
+    "@slack/web-api": "^5.8.1",
+    "@types/express": "^4.17.6",
+    "@types/node": "10.17.5",
+    "aws-sdk": "^2.673.0",
+    "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "form-data": "^3.0.0",
+    "request": "^2.88.2"
+  },
+  "devDependencies": {
+    "jest": "^26.0.1",
+    "ts-jest": "^26.0.0",
+    "@types/jest": "^25.2.1",
+    "source-map-support": "^0.5.16",
+    "typescript": "^3.9.2",
+    "webpack-cli": "^3.3.11",
+    "webpack": "^4.43.0"
+  }
+}
