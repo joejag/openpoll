@@ -4,6 +4,12 @@ This is a Slack Bot for running polls
 
 ![Example poll in Slack](docs/screenshot.png)
 
+# Installing to your workspace
+
+Use this handy button:
+
+<a href="https://slack.com/oauth/v2/authorize?client_id=1121257243189.1122859321587&scope=chat:write,commands"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"></a>
+
 # Running
 
 You can bring up your own copy in AWS by:
