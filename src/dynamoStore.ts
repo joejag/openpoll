@@ -49,7 +49,7 @@ export const persistPoll = (newPoll: Poll) => {
   return db.put(param).promise()
 }
 
-export const getPoll = (id: string): Promise<Poll | null> => {
+export const getPoll = (id: string): Promise<Poll> => {
   const param = {
     TableName: VOTES_TABLE_NAME,
     Key: {
@@ -63,7 +63,7 @@ export const getPoll = (id: string): Promise<Poll | null> => {
       if (data.Item) {
         return dynamoToPoll(data.Item)
       } else {
-        return null
+        throw new Error(`Cannot find poll ${id}`)
       }
     })
 }
@@ -86,7 +86,7 @@ export const setPollOpenness = (id: string, mode: boolean) => {
     })
 }
 
-export const setPollToLimitedVote = (id: string, voteType: string, limit = null) => {
+export const setPollToLimitedVote = (id: string, voteType: string, limit: number | null = null) => {
   return db
     .update({
       TableName: VOTES_TABLE_NAME,

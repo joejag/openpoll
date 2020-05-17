@@ -181,7 +181,7 @@ export const handleSlackInteractions = (action: string, id: string, payload: any
         return createSlackClient(payload.team.id).then((web) => {
           return web.chat
             .postMessage({ channel: payload.channel.id, text: '', blocks: createSlackPoll(poll) })
-            .then((res) => {
+            .then((res: any) => {
               poll.id = `${payload.team.id}-${payload.channel.id}-${res.message.ts}`
               poll.isOpen = true
               return persistPoll(poll)
@@ -205,45 +205,45 @@ export const handleSlackInteractions = (action: string, id: string, payload: any
       }
 
       if (poll.voteType === 'UNLIMITED' && !alreadyVotedForChoice) {
-        return addVotesForMany(id, payload.user.id, choice).then((poll: any) => {
+        return addVotesForMany(id, payload.user.id, choice).then((poll: Poll) => {
           if (poll) {
             return axios.post(payload.response_url, { replace_original: 'true', blocks: createSlackPoll(poll) })
           } else {
-            Promise.resolve()
+            return Promise.resolve()
           }
         })
       } else if (poll.voteType === 'UNLIMITED' && alreadyVotedForChoice) {
-        return removeVote(id, payload.user.id, choice).then((poll: any) => {
+        return removeVote(id, payload.user.id, choice).then((poll: Poll) => {
           if (poll) {
             return axios.post(payload.response_url, { replace_original: 'true', blocks: createSlackPoll(poll) })
           } else {
-            Promise.resolve()
+            return Promise.resolve()
           }
         })
       }
 
       if (poll.voteType === 'LIMITED' && !alreadyVotedForChoice && poll.votesLimit === 1) {
-        return addVotesForSingle(id, payload.user.id, choice).then((poll: any) => {
+        return addVotesForSingle(id, payload.user.id, choice).then((poll: Poll) => {
           if (poll) {
             return axios.post(payload.response_url, { replace_original: 'true', blocks: createSlackPoll(poll) })
           } else {
-            Promise.resolve()
+            return Promise.resolve()
           }
         })
       } else if (poll.voteType === 'LIMITED' && !alreadyVotedForChoice && timesVoted < poll.votesLimit) {
-        return addVotesForMany(id, payload.user.id, choice).then((poll: any) => {
+        return addVotesForMany(id, payload.user.id, choice).then((poll: Poll) => {
           if (poll) {
             return axios.post(payload.response_url, { replace_original: 'true', blocks: createSlackPoll(poll) })
           } else {
-            Promise.resolve()
+            return Promise.resolve()
           }
         })
       } else if (poll.voteType === 'LIMITED' && alreadyVotedForChoice) {
-        return removeVote(id, payload.user.id, choice).then((poll: any) => {
+        return removeVote(id, payload.user.id, choice).then((poll: Poll) => {
           if (poll) {
             return axios.post(payload.response_url, { replace_original: 'true', blocks: createSlackPoll(poll) })
           } else {
-            Promise.resolve()
+            return Promise.resolve()
           }
         })
       }
@@ -252,7 +252,11 @@ export const handleSlackInteractions = (action: string, id: string, payload: any
 
   if (action === Interactions.FinishPoll) {
     return setPollOpenness(id, false).then((poll: Poll) => {
-      return axios.post(payload.response_url, { replace_original: 'true', blocks: createPollSummary(poll) }).then(() => deletePoll(poll.id))
+      if (poll) {
+        return axios.post(payload.response_url, { replace_original: 'true', blocks: createPollSummary(poll) }).then(() => deletePoll(poll.id))
+      } else {
+        return Promise.resolve()
+      }
     })
   }
 

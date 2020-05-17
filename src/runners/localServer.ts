@@ -4,10 +4,13 @@ import axios from 'axios'
 import { handleSlackInteractions, handleSlashCommand, questionExtractor } from '../domain'
 import { storeCredentials } from '../dynamoStore'
 
-AWS.config.update({ region: 'eu-west-2' }) // for Dynamo DB - AWS sets this automatically
-
+import qs = require('querystring')
 import bodyParser = require('body-parser')
 import express = require('express')
+
+const SLACK_CLIENT_ID = process.env.SLACK_CLIENT_ID || 'MISSING_CLIENT_ID'
+const SLACK_CLIENT_SECRET = process.env.SLACK_CLIENT_SECRET || 'MISSING_CLIENT_SECRET'
+AWS.config.update({ region: 'eu-west-2' }) // for Dynamo DB - AWS sets this automatically
 
 const app = express()
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -17,27 +20,6 @@ app.listen(4390, () => {
   console.log('Example app listening on port ' + 4390)
 })
 
-app.post('/poll', (req, res) => {
-  const id = `${req.body.team_id}-${req.body.channel_id}-${req.body.user_id}`
-  const author = req.body.user_id
-  const { question, options } = questionExtractor(req.body.text)
-  console.log({ id, command: req.body.command + ' ' + req.body.text })
-
-  handleSlashCommand(id, question, options, author, req.body).then(() => res.send('OK'))
-})
-
-app.post('/interactions', (req, res) => {
-  const payload = JSON.parse(req.body.payload)
-  const id = `${payload.team.id}-${payload.channel.id}-${payload.container.message_ts}`
-  const action = payload.actions[0].value
-  console.log({ id, action })
-
-  handleSlackInteractions(action, id, payload).then(() => res.send('OK'))
-})
-
-const SLACK_CLIENT_ID = process.env.SLACK_CLIENT_ID || 'MISSING_CLIENT_ID'
-const SLACK_CLIENT_SECRET = process.env.SLACK_CLIENT_SECRET || 'MISSING_CLIENT_SECRET'
-
 app.get('/install', async (req, res) => {
   const scope = `commands%2Cchat%3Awrite`
   res.send(
@@ -46,8 +28,6 @@ app.get('/install', async (req, res) => {
      </a>`
   )
 })
-
-const qs = require('querystring')
 
 app.get('/oauth', async (req, res) => {
   const accessCode = req.query.code
@@ -74,4 +54,22 @@ app.get('/oauth', async (req, res) => {
       console.log('error', err)
       res.send('Something has gone wrong')
     })
+})
+
+app.post('/poll', (req, res) => {
+  const id = `${req.body.team_id}-${req.body.channel_id}-${req.body.user_id}`
+  const author = req.body.user_id
+  const { question, options } = questionExtractor(req.body.text)
+  console.log({ id, command: req.body.command + ' ' + req.body.text })
+
+  handleSlashCommand(id, question, options, author, req.body).then(() => res.send('OK'))
+})
+
+app.post('/interactions', (req, res) => {
+  const payload = JSON.parse(req.body.payload)
+  const id = `${payload.team.id}-${payload.channel.id}-${payload.container.message_ts}`
+  const action = payload.actions[0].value
+  console.log({ id, action })
+
+  handleSlackInteractions(action, id, payload).then(() => res.send('OK'))
 })

@@ -3,20 +3,24 @@ import * as util from 'util'
 import { Interactions, Poll } from './domain'
 
 const emojiLookup = (number: number): string => {
-  return (
-    {
-      1: ':one:',
-      2: ':two:',
-      3: ':three:',
-      4: ':four:',
-      5: ':five:',
-      6: ':six:',
-      7: ':seven:',
-      8: ':eight:',
-      9: ':nine:',
-      10: ':keycap_ten:',
-    }[number] || ':hash:'
-  )
+  interface Lookups {
+    [id: number]: string
+  }
+
+  const lookupTable: Lookups = {
+    1: ':one:',
+    2: ':two:',
+    3: ':three:',
+    4: ':four:',
+    5: ':five:',
+    6: ':six:',
+    7: ':seven:',
+    8: ':eight:',
+    9: ':nine:',
+    10: ':keycap_ten:',
+  }
+
+  return lookupTable[number] || ':hash:'
 }
 
 export const prettyPrint = (data: any) => {
